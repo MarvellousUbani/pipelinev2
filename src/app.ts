@@ -39,29 +39,31 @@ const startApp = async () => {
         let results = modifiedPageData[currentPage];
         let previousDisabled = currentPage == 1 ? true : false;
         
-        let currentBuild = ``;
+        let tableData = ``;
 
         
 
         for(let i = 0; i < results.length; i++){
             const {id, age, gender, row} = results[i];
-            currentBuild += `<tr data-entryid ='${id}'><td>${row}</td><td>${gender}</td><td>${age}</td> </tr>`
+           tableData += `<tr data-entryid ='${id}'><td>${row}</td><td>${gender}</td><td>${age}</td> </tr>`
         }
 
        // Showing current page on UI
-        document.querySelector('[data-pageview]').innerHTML = `Showing Page ${currentPage}`;
-        document.querySelector('[data-pageview]').dataset.pageview = currentPage;
+      //   document.querySelector('[data-pageview]').innerHTML = `Showing Page ${currentPage}`;
+      //   document.querySelector('[data-pageview]').dataset.pageview = currentPage;
 
        // Determine previous button state
-      document.querySelector('[data-prevbtn]').disabled = previousDisabled;
-      document.querySelector('[data-prevbtn]').dataset.prevbtn = currentPage-1;
+      // document.querySelector('[data-prevbtn]').disabled = previousDisabled;
+      // document.querySelector('[data-prevbtn]').dataset.prevbtn = currentPage-1;
 
       // Next Button Data state
-      document.querySelector('[data-nextbtn]').dataset.nextbtn = currentPage+1;
+      // document.querySelector('[data-nextbtn]').dataset.nextbtn = currentPage+1;
+
+      paginationBuild();
       
 
-      tBody.innerHTML = currentBuild;
-      document.querySelector('.page-container').classList.add("active");
+      tBody.innerHTML = tableData;
+      
         
      }
 
@@ -77,15 +79,38 @@ const startApp = async () => {
 
      }
 
+     function paginationBuild(){
+      if(document.querySelector(".btn-group")){
+         document.querySelector(".btn-group").remove();
+      }
+      // Pagination Build
+      let btnGroup = document.createElement("div");
+      btnGroup.classList.add("btn-group");
+      
+      let prevBtn = document.createElement("button");
+      prevBtn.dataset.prevbtn = currentPage - 1;
+      prevBtn.innerText = `Previous`;
+      prevBtn.addEventListener('click', () => {
+         currentPage--;
+         addData();
+      });
 
-     document.querySelector('[data-nextbtn]').addEventListener('click', () => {
-        nextData();
-     });
+      let nextBtn = document.createElement("button");
+      nextBtn.dataset.nextbtn = currentPage + 1;
+      nextBtn.innerText = `Next`;
+      nextBtn.addEventListener('click', () => {
+         nextData();
+      });
+ 
+      let pageViewLabel = document.createElement("label");
+      pageViewLabel.dataset.pageview = currentPage;
+      pageViewLabel.innerText = `Showing Page ${currentPage}`;
 
-     document.querySelector('[data-prevbtn]').addEventListener('click', () => {
-        currentPage--;
-        addData();
-     });
+     
+      btnGroup.append(prevBtn, nextBtn, pageViewLabel);
+      document.querySelector(".page-container").appendChild(btnGroup);
+     }
+
 
      
 };
