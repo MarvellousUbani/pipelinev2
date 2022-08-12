@@ -37,7 +37,6 @@ const startApp = async () => {
         tBody.replaceChildren();
 
         let results = modifiedPageData[currentPage];
-        let previousDisabled = currentPage == 1 ? true : false;
         
         let tableData = ``;
 
@@ -83,12 +82,16 @@ const startApp = async () => {
       if(document.querySelector(".btn-group")){
          document.querySelector(".btn-group").remove();
       }
+
+      let previousDisabled = currentPage == 1 ? true : false;
+      
       // Pagination Build
       let btnGroup = document.createElement("div");
       btnGroup.classList.add("btn-group");
       
       let prevBtn = document.createElement("button");
       prevBtn.dataset.prevbtn = currentPage - 1;
+      prevBtn.disabled = previousDisabled;
       prevBtn.innerText = `Previous`;
       prevBtn.addEventListener('click', () => {
          currentPage--;
