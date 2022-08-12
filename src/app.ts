@@ -84,10 +84,10 @@ const startApp = async () => {
       }
 
       let previousDisabled = currentPage == 1 ? true : false;
-      
+
       // Pagination Build
-      let btnGroup = document.createElement("div");
-      btnGroup.classList.add("btn-group");
+      let btnGroup = document.querySelector(".btn-group");
+      // btnGroup.replaceChildren();
       
       let prevBtn = document.createElement("button");
       prevBtn.dataset.prevbtn = currentPage - 1;
@@ -111,7 +111,6 @@ const startApp = async () => {
 
      
       btnGroup.append(prevBtn, nextBtn, pageViewLabel);
-      document.querySelector(".page-container").appendChild(btnGroup);
      }
 
 
