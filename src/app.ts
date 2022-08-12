@@ -61,6 +61,7 @@ const startApp = async () => {
       
 
       tBody.innerHTML = currentBuild;
+      document.querySelector('.page-container').classList.add("active");
         
      }
 
