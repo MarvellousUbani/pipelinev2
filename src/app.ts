@@ -41,15 +41,26 @@ const startApp = async () => {
         
         let currentBuild = ``;
 
-        // Determine previous button state
-        document.querySelector('[data-prevbtn]').disabled = previousDisabled;
+        
 
         for(let i = 0; i < results.length; i++){
             const {id, age, gender, row} = results[i];
             currentBuild += `<tr data-entryid ='${id}'><td>${row}</td><td>${gender}</td><td>${age}</td> </tr>`
         }
 
-        tBody.innerHTML = currentBuild;
+       // Showing current page on UI
+        document.querySelector('[data-pageview]').innerHTML = `Showing Page ${currentPage}`;
+        document.querySelector('[data-pageview]').dataset.pageview = currentPage;
+
+       // Determine previous button state
+      document.querySelector('[data-prevbtn]').disabled = previousDisabled;
+      document.querySelector('[data-prevbtn]').dataset.prevbtn = currentPage-1;
+
+      // Next Button Data state
+      document.querySelector('[data-nextbtn]').dataset.nextbtn = currentPage+1;
+      
+
+      tBody.innerHTML = currentBuild;
         
      }
 
