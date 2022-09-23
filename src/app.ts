@@ -42,6 +42,10 @@ const startApp = async () => {
         
         let currentBuild = ``;
 
+        if(tBody != undefined){
+            tBody.innerHTML = "";
+          }
+
         
 
         for(let i = 0; i < results.length; i++){
