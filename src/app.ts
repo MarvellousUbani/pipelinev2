@@ -3,6 +3,9 @@ const startApp = async () => {
 
     let modifiedPageData = {};
     let currentPage;
+    const dataPageView = document.querySelector('[data-pageview]') as HTMLElement | null;
+    const dataPrevBtn = document.querySelector('[data-prevbtn]') as HTMLButtonElement | null;
+    const dataNextBtn =  document.querySelector('[data-nextbtn]') as HTMLButtonElement | null;
 
 
    // Onload
@@ -15,7 +18,6 @@ const startApp = async () => {
           throw new Error(message);
         }
         const userData = await response.json();
-        console.log(userData);
 
         // Save object and assign page
         currentPage = Number(userData['info'].page);
@@ -25,7 +27,6 @@ const startApp = async () => {
         modifiedPageData[currentPage + 1] = userData['results'][0][currentPage + 1];
 
 
-        console.log(modifiedPageData);
         addData();
     };
 
@@ -34,7 +35,7 @@ const startApp = async () => {
 
      function addData(){
         let tBody = document.querySelector("tbody");
-        tBody.replaceChildren();
+        tBody?.replaceChildren();
 
         let results = modifiedPageData[currentPage];
         let previousDisabled = currentPage == 1 ? true : false;
@@ -49,19 +50,26 @@ const startApp = async () => {
         }
 
        // Showing current page on UI
-        document.querySelector('[data-pageview]').innerHTML = `Showing Page ${currentPage}`;
-        document.querySelector('[data-pageview]').dataset.pageview = currentPage;
+       if(dataPageView != undefined){
+            dataPageView.innerHTML = `Showing Page ${currentPage}`;
+            dataPageView.dataset.pageview = String(currentPage);
+        }
 
        // Determine previous button state
-      document.querySelector('[data-prevbtn]').disabled = previousDisabled;
-      document.querySelector('[data-prevbtn]').dataset.prevbtn = currentPage-1;
+        if(dataPrevBtn != undefined){
+            dataPrevBtn.disabled = previousDisabled;
+            dataPrevBtn.dataset.prevbtn = String(currentPage-1);
+        }
 
       // Next Button Data state
-      document.querySelector('[data-nextbtn]').dataset.nextbtn = currentPage+1;
+      if(dataNextBtn != undefined){
+        dataNextBtn.dataset.nextbtn = String(currentPage+1);
+      }
       
-
-      tBody.innerHTML = currentBuild;
-      document.querySelector('.page-container').classList.add("active");
+      if(tBody != undefined){
+        tBody.innerHTML = currentBuild;
+      }
+      document.querySelector('.page-container')?.classList.add("active");
         
      }
 
@@ -78,11 +86,11 @@ const startApp = async () => {
      }
 
 
-     document.querySelector('[data-nextbtn]').addEventListener('click', () => {
+     dataNextBtn?.addEventListener('click', () => {
         nextData();
      });
 
-     document.querySelector('[data-prevbtn]').addEventListener('click', () => {
+     dataPrevBtn?.addEventListener('click', () => {
         currentPage--;
         addData();
      });
