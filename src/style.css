@@ -2,11 +2,11 @@ body {
     font-family: sans-serif;
 }
 
-.page-container{
+.page-container {
     display: none;
 }
 
-.page-container.active{
+.page-container.active {
     display: block;
 }
 
