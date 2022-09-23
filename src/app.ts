@@ -9,7 +9,7 @@ const startApp = async () => {
 
 
    // Onload
-   fetchUserData();
+   fetchUserData(1);
 
     async function fetchUserData(page = 1) {
         const response = await fetch(`https://randomapi.com/api/8csrgnjw?key=LEIX-GF3O-AG7I-6J84&page=${page}`);
