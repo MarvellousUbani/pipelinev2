@@ -78,6 +78,7 @@ async function fetchUserData(page = 1) {
  function nextData(){
     // If its an odd page then there's no data to fetch
     currentPage++;
+    console.log(modifiedPageData[currentPage]);
     if(modifiedPageData[currentPage]){
         addData();
         return;
