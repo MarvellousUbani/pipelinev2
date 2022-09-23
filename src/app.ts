@@ -1,6 +1,6 @@
 
 let modifiedPageData = {};
-let currentPage;
+let currentPage = 1;
 const dataPageView = document.querySelector('[data-pageview]') as HTMLElement | null;
 const dataPrevBtn = document.querySelector('[data-prevbtn]') as HTMLButtonElement | null;
 const dataNextBtn =  document.querySelector('[data-nextbtn]') as HTMLButtonElement | null;
@@ -8,7 +8,9 @@ const dataNextBtn =  document.querySelector('[data-nextbtn]') as HTMLButtonEleme
 const startApp = async () => {
 
    // Onload
-   fetchUserData(1);     
+   fetchUserData(currentPage).then(() => {
+    addData();
+  });    
 };
 
 async function fetchUserData(page = 1) {
@@ -19,15 +21,11 @@ async function fetchUserData(page = 1) {
     }
     const userData = await response.json();
 
-    // Save object and assign page
-    currentPage = Number(userData['info'].page);
 
     // Caching & Modifying the fetched data into object
     modifiedPageData[currentPage] = userData['results'][0][currentPage];
     modifiedPageData[currentPage + 1] = userData['results'][0][currentPage + 1];
 
-
-    addData();
 };
 
 
@@ -85,7 +83,9 @@ async function fetchUserData(page = 1) {
         return;
     }
 
-    fetchUserData(currentPage);
+    fetchUserData(currentPage).then(() => {
+        addData();
+      });
 
  }
 
