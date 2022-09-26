@@ -1,100 +1,100 @@
-let modifiedPageData = {};
-let currentPage = 1;
-const dataPageView = document.querySelector(
-  "[data-pageview]"
-) as HTMLElement | null;
-const dataPrevBtn = document.querySelector(
-  "[data-prevbtn]"
-) as HTMLButtonElement | null;
-const dataNextBtn = document.querySelector(
-  "[data-nextbtn]"
-) as HTMLButtonElement | null;
+const ENDPOINT_URL = "https://randomapi.com/api/8csrgnjw?key=LEIX-GF3O-AG7I-6J84";
+const loader = document.querySelector(".loader")!;
+const prevBtn = document.querySelector("[data-prevbtn]")!;
+const nextBtn = document.querySelector("[data-nextbtn]")!;
+const pageViewText = document.querySelector("[data-pageview]")!;
+const tbody = document.querySelector("tbody")!;
 
-const startApp = async () => {
-  // Onload
-  fetchUserData(currentPage).then(() => {
-    addData();
-  });
+interface UserResults {
+	id: string;
+	age: string;
+	gender: string;
+	row: string;
+}
+
+let pageInView = 1;
+
+const showLoader = (state: boolean) => {
+	state
+		? loader.classList.replace("hide_loader", "show_loader")
+		: loader.classList.replace("show_loader", "hide_loader");
 };
 
-async function fetchUserData(page = 1) {
-  const response = await fetch(
-    `https://randomapi.com/api/8csrgnjw?key=LEIX-GF3O-AG7I-6J84&page=${page}`
-  );
-  if (!response.ok) {
-    const message = `An error has occured: ${response.status}`;
-    throw new Error(message);
+const fetchData = async (page = 1) => {
+  showLoader(true);
+  const url = `${ENDPOINT_URL}&page=${page}`;
+  const users = <UserResults[]>[];
+  try {
+    const response = await fetch(url);
+    const data = await response.json();
+    for (let result in data.results[0]) {
+      if (result === "paging") break; // we don't need this data
+      users.push(...data.results[0][result]);
+    }
+    return users;
+  } catch (error) {
+    console.error(error);
+    const tr = document.createElement("tr");
+    tr.textContent = "No results found";
+    tbody.appendChild(tr);
+  } finally {
+    showLoader(false);
   }
-  const userData = await response.json();
+};
 
-  // Caching & Modifying the fetched data into object
-  modifiedPageData[currentPage] = userData["results"][0][currentPage];
-  modifiedPageData[currentPage + 1] = userData["results"][0][currentPage + 1];
-}
+const updateTable = (data: UserResults[]) => {
+  tbody.innerHTML = "";
+  data.forEach((element) => {
+    const row = document.createElement("tr");
+    row.setAttribute("data-entryid", element.id);
 
-// Function to Build DOM
+    const idCell = document.createElement("td");
+    idCell.textContent = element.row;
+    const genderCell = document.createElement("td");
+    genderCell.textContent = element.gender;
+    const ageCell = document.createElement("td");
+    ageCell.textContent = element.age;
 
-function addData() {
-  let tBody = document.querySelector("tbody");
-  tBody?.replaceChildren();
+    row.appendChild(idCell);
+    row.appendChild(genderCell);
+    row.appendChild(ageCell);
 
-  let results = modifiedPageData[currentPage];
-  let previousDisabled = currentPage == 1 ? true : false;
-
-  let currentBuild = ``;
-
-  if (tBody != undefined) {
-    tBody.innerHTML = "";
-  }
-
-  for (let i = 0; i < results.length; i++) {
-    const { id, age, gender, row } = results[i];
-    currentBuild += `<tr data-entryid ='${id}'><td>${row}</td><td>${gender}</td><td>${age}</td> </tr>`;
-  }
-
-  // Showing current page on UI
-  if (dataPageView != undefined) {
-    dataPageView.innerHTML = `Showing Page ${currentPage}`;
-    dataPageView.dataset.pageview = String(currentPage);
-  }
-
-  // Determine previous button state
-  if (dataPrevBtn != undefined) {
-    dataPrevBtn.disabled = previousDisabled;
-    dataPrevBtn.dataset.prevbtn = String(currentPage - 1);
-  }
-
-  // Next Button Data state
-  if (dataNextBtn != undefined) {
-    dataNextBtn.dataset.nextbtn = String(currentPage + 1);
-  }
-
-  if (tBody != undefined) {
-    tBody.innerHTML = currentBuild;
-  }
-  document.querySelector(".page-container")?.classList.add("active");
-}
-
-function nextData() {
-  // If its an odd page then there's no data to fetch
-  currentPage++;
-  if (modifiedPageData[currentPage]) {
-    addData();
-    return;
-  }
-
-  fetchUserData(currentPage).then(() => {
-    addData();
+    tbody.appendChild(row);
   });
-}
+  pageViewText.textContent = `Showing Page ${pageInView}`;
+};
 
-dataNextBtn?.addEventListener("click", () => {
-  nextData();
-});
+const getNextPage = async () => {
+  pageInView++;
+  const data = await fetchData(pageInView);
+  if (data) {
+    const newData = data?.slice(0, 5);
+    updateTable(newData);
+    if (pageInView >= 2) prevBtn.removeAttribute("disabled");
+  }
+};
 
-dataPrevBtn?.addEventListener("click", () => {
-  currentPage--;
-  addData();
-});
+const getPreviousPage = async () => {
+  pageInView--;
+  const data = await fetchData(pageInView);
+  if (data) {
+    const newData = data?.slice(0, 5);
+    updateTable(newData);
+    if (pageInView === 1) prevBtn.setAttribute("disabled", "true");
+  }
+};
+
+const startApp = async () => {
+  pageViewText.textContent = `Showing Page ${pageInView}`;
+  nextBtn.addEventListener("click", getNextPage);
+  prevBtn.addEventListener("click", getPreviousPage);
+  prevBtn.setAttribute("disabled", "true");
+
+	const data = await fetchData();
+  if (data) {
+    const newData = data?.slice(0, 5);
+    updateTable(newData);
+  }
+};
 
 document.addEventListener("DOMContentLoaded", startApp);
